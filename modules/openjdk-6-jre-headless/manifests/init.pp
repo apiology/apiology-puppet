@@ -1,0 +1,6 @@
+class openjdk-6-jre-headless {
+  package {
+    "openjdk-6-jre-headless":
+      ensure => installed;
+  }
+}
