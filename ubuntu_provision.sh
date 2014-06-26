@@ -11,6 +11,7 @@ if [ ! -f /var/cache/apt/pkgcache.bin ] || \
 then
   sudo apt-get update -y
 fi
+sudo apt-get upgrade -y
 set -e
 
 if ! grep ubuntu /etc/passwd >/dev/null 2>&1
