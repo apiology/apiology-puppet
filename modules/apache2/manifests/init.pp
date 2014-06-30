@@ -1,5 +1,5 @@
 define apache2::loadmodule () {
-  file { "/etc/apache2/mods-enabled/${name}.load": }
+  file { "/etc/apache2/mods-available/${name}.load": }
   exec { "/usr/sbin/a2enmod $name" :
     unless => "/bin/readlink -e /etc/apache2/mods-enabled/${name}.load",
     require => [Package[apache2],File["/etc/apache2/mods-available/${name}.load"]],
@@ -8,7 +8,6 @@ define apache2::loadmodule () {
 }
 
 define apache2::loadconf () {
-  file { "/etc/apache2/conf-available/${name}.conf": }
   exec { "/usr/sbin/a2enconf $name" :
     unless => "/bin/readlink -e /etc/apache2/conf-enabled/${name}.conf",
     require => [Package[apache2],File["/etc/apache2/conf-available/${name}.conf"]],
