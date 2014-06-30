@@ -22,3 +22,4 @@ then
 #  rvmsudo rvm install --default $PREFERRED_VERSION
 fi
 ruby -v
+type bundle 2>/dev/null || gem install bundler

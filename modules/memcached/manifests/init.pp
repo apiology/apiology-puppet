@@ -3,7 +3,7 @@ class memcached {
   # two packages with different providers.
   exec { "hack-memcached":
     command => "/usr/bin/apt-get install memcached",
-    unless => "dpkg -s memcached >/dev/null 2>&1";
+    unless => "/usr/bin/dpkg -s memcached >/dev/null 2>&1";
   }
   #package {
   #  "memcached":
