@@ -16,7 +16,7 @@ define apache2::loadconf () {
 }
 
 define apache2::loadsite () {
-  file { "/etc/apache2/sites-available/${name}.conf": }
+#  file { "/etc/apache2/sites-available/${name}.conf": }
   exec { "/usr/sbin/a2ensite $name" :
     unless => "/bin/readlink -e /etc/apache2/sites-enabled/${name}.conf",
     require => [Package[apache2],File["/etc/apache2/sites-available/${name}.conf"]],
@@ -47,6 +47,7 @@ class apache2 {
   apache2::loadmodule{"proxy_http":}
   apache2::loadmodule{"vhost_alias":}
   apache2::loadmodule{"headers":}
+  file { "/etc/apache2/sites-available/default-ssl.conf": }
   apache2::loadsite{"default-ssl":}
 
   file { "/etc/apache2/authusers":
