@@ -1,6 +1,7 @@
 class { 'apt': }
 
 class emacs24 {
+  include software-properties-common
   exec { 'setup_emacs_repo':
      command => "/usr/bin/add-apt-repository ppa:cassou/emacs -y && apt-get update -y",
      require => Package['software-properties-common'],
