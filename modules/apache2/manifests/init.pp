@@ -59,7 +59,8 @@ class apache2 {
   
   exec { "/usr/sbin/make-ssl-cert generate-default-snakeoil --force-overwrite":
     notify => Service[apache2],
-    unless => 'test /etc/ssl/certs/ssl-cert-snakeoil.pem -nt /etc/ssl/certs/ca-certificates.crt',
+    unless => '[ /etc/ssl/certs/ssl-cert-snakeoil.pem -nt /etc/ssl/certs/ca-certificates.crt ]',
+    provider => "shell",
     require => Package[apache2]
   }
   
