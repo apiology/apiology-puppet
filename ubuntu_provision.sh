@@ -12,6 +12,10 @@ then
   sudo apt-get update -y
 fi
 sudo apt-get upgrade -y
+if [ ! -f /usr/bin/curl ]
+then
+  sudo apt-get install curl
+fi
 set -e
 
 if ! grep ubuntu /etc/passwd >/dev/null 2>&1
