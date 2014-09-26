@@ -1,8 +1,10 @@
 class jenkins {
+  include apache2
+  include wget
   exec { 'install_jenkins_key':
-    command => "wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -",
+    command => "/usr/bin/wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo /usr/bin/apt-key add -",
     require => Package['wget'],
-    unless => "apt-key list | grep kk@kohsuke.org"
+    unless => "/usr/bin/apt-key list | grep kk@kohsuke.org"
   }
   exec { 'Extra jenkins apt-get update':
     command => '/usr/bin/apt-get update',
@@ -46,12 +48,12 @@ class jenkins {
     default => "/var/lib/jenkins/plugins/git.jpi"
   }
   exec {
-    "java -jar $cli_jar -s http://localhost:8080/jenkins install-plugin http://updates.jenkins-ci.org/download/plugins/git-client/1.0.2/git-client.hpi && java -jar $cli_jar -s http://localhost:8080/jenkins install-plugin http://updates.jenkins-ci.org/download/plugins/git/1.2.0/git.hpi -restart":
+    "/usr/bin/java -jar $cli_jar -s http://localhost:8080/jenkins install-plugin http://updates.jenkins-ci.org/download/plugins/git-client/1.0.2/git-client.hpi && /usr/bin/java -jar $cli_jar -s http://localhost:8080/jenkins install-plugin http://updates.jenkins-ci.org/download/plugins/git/1.2.0/git.hpi -restart":
     user => 'jenkins',
     require => Service["jenkins"],
     tries => 5,
     try_sleep => 7,
-    unless => "ls $written_git_jpi"
+    unless => "/bin/ls $written_git_jpi"
   }
   file { "/etc/apache2/conf-available/jenkins.conf":
     owner => root,
