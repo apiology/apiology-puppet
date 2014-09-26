@@ -9,23 +9,23 @@ class oraclejava-8-jdk {
     'debconf-utils':
   }
   exec { 'oracle_license_selected':
-    command => 'echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections',
+    command => '/bin/echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections',
     require => Package['debconf-utils'],
-    unless => 'debconf-get-selections 2>/dev/null | grep shared/accepted-oracle-license-v1-1';
+    unless => '/usr/bin/debconf-get-selections 2>/dev/null | grep shared/accepted-oracle-license-v1-1 | grep true';
   }
   exec { 'oracle_license_seen':
-    command => 'echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections',
+    command => '/bin/echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections',
     require => Package['debconf-utils'],
-    unless => 'debconf-get-selections 2>/dev/null | grep shared/accepted-oracle-license-v1-1';
+    unless => '/usr/bin/debconf-get-selections 2>/dev/null | grep shared/accepted-oracle-license-v1-1 | grep true';
   }
   package {
     "oracle-java8-installer":
-      ensure => installed;
+      ensure => installed,
+      require => [Exec['oracle_license_seen'],Exec['oracle_license_selected']];
   }
-  
   exec { 'use-java-8':
-    command => "update-java-alternatives -s java-8-oracle",
-    unless => 'ls -l /etc/alternatives/java | grep java-8-oracle',
+    command => "/usr/sbin/tupdate-java-alternatives -s java-8-oracle",
+    unless => '/bin/ls -l /etc/alternatives/java | /bin/grep java-8-oracle',
     require => Package['oracle-java8-installer'];
   }
 }
