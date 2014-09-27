@@ -1,10 +1,22 @@
 #!/bin/bash -e
 
-echo Running ubuntu_provision_rvm.sh as $0
-. /etc/profile.d/rvm.sh
-rvm requirements run
-
 RUBY_VERSION=2.1.3
+
+echo Running ubuntu_provision_rvm.sh as $0
+
+rvm requirements run
+rvm get staple
+rvm reload
+rvm cleanup all
+
+
+if [[ -s "$HOME/.rvm/scripts/rvm" ]]
+then
+  . "$HOME/.rvm/scripts/rvm"
+elif [ -f /etc/profile.d/rvm.sh ]
+then
+  . /etc/profile.d/rvm.sh
+fi
 
 interrogate_ubuntu() {
   OS_VERSION=`lsb_release -r -s`
