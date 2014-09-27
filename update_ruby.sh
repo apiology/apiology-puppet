@@ -68,9 +68,12 @@ then
     # or just uncomment the next line and get rid of the 'exit 1'
     # rvm install $RUBY_VERSION
   fi
-  rvm alias create default ruby-${RUBY_VERSION}
-  rvm use default
-#  rvmsudo rvm install --default $PREFERRED_VERSION
 fi
+
+rvm alias delete default
+rvm alias create default ruby-${RUBY_VERSION}
+rvm use default
+rvm uninstall ruby-2.1.2
+#  rvmsudo rvm install --default $PREFERRED_VERSION
 ruby -v
 type bundle 2>/dev/null || gem install bundler
