@@ -23,8 +23,27 @@ interrogate_ubuntu() {
   OS_NAME=ubuntu
 }
 
+interrogate_osx() {
+  OS_VERSION=`sw_vers -productVersion | cut -d\. -f1-2`
+  OS_NAME=osx
+}
+
+interrogate_os() {
+  echo "Checking OS"
+  if [ -x /usr/bin/lsb_release ]
+  then
+    interrogate_ubuntu
+  elif [ `uname` = Darwin ]
+  then
+    interrogate_osx
+  else
+    echo "Could not figure out type of OS!"
+    exit 1
+  fi
+}
+
 interrogate_arch() {
-  ARCH=`uname -p`
+  ARCH=`uname -m` # uname -p on osx returns i386 even on x86_64 machines
   if [ $ARCH = i686 ]
   then
     ARCH=i386
@@ -36,7 +55,7 @@ if [ $HAS_RUBY == 0 ]
 then
   # If this doesn't work, see 'Ruby' simplenote on how to upload binary.
   interrogate_arch
-  interrogate_ubuntu
+  interrogate_os
   RVM_FILE=ruby-${RUBY_VERSION}.tar.bz2
   BINARY=binaries/${OS_NAME}/${OS_VERSION}/${ARCH}/${RVM_FILE}
   if ! rvmsudo rvm mount -r http://rvm-binaries-apiology.s3.amazonaws.com/$BINARY
