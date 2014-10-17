@@ -77,6 +77,3 @@ $RVM alias delete default
 $RVM alias create default ruby-${RUBY_VERSION}
 $RVM use default
 $RVM uninstall ruby-2.1.2
-#  $RVM install --default $PREFERRED_VERSION
-ruby -v
-type bundle 2>/dev/null || gem install bundler
