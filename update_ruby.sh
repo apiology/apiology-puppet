@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RUBY_VERSION=2.1.3
+RUBY_VERSION=2.1.4
 
 echo Running update_ruby.sh as $0
 
@@ -31,6 +31,11 @@ interrogate_osx() {
   OS_NAME=osx
 }
 
+interrogate_cygwin() {
+  OS_VERSION=unknown
+  OS_NAME=cygwin
+}
+
 interrogate_os() {
   echo "Checking OS"
   if [ -x /usr/bin/lsb_release ]
@@ -39,6 +44,9 @@ interrogate_os() {
   elif [ `uname` = Darwin ]
   then
     interrogate_osx
+  elif [ `uname` = CYGWIN_NT-6.1 ]
+  then
+    interrogate_cygwin
   else
     echo "Could not figure out type of OS!"
     exit 1
@@ -80,6 +88,5 @@ $RVM alias delete default
 $RVM alias create default ruby-${RUBY_VERSION}
 $RVM use default
 $RVM uninstall ruby-2.1.2
+$RVM uninstall ruby-2.1.3
 rvm reload
-ruby -v
-type bundle 2>/dev/null || gem install bundler
