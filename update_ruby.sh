@@ -63,7 +63,10 @@ then
   BINARY=binaries/${OS_NAME}/${OS_VERSION}/${ARCH}/${RVM_FILE}
   if ! $RVM mount -r http://rvm-binaries-apiology.s3.amazonaws.com/$BINARY
   then
-    echo "Need to install a new binary ruby into http://rvm-binaries-apiology.s3.amazonaws.com/"
+    echo      
+    echo
+    echo "===================================================================================================="
+    echo "Vince needs to install a new binary ruby into http://rvm-binaries-apiology.s3.amazonaws.com/"
     echo "Please put the following into an issue report at https://github.com/apiology/apiology-puppet/issues:"
     echo
     echo "Need binary ruby installed as $BINARY"
