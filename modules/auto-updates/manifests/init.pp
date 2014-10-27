@@ -1,4 +1,26 @@
 class auto-updates {
+  case $operatingsystem {
+    'Solaris':          { include auto-updates::solaris }
+    'RedHat', 'CentOS': { include auto-updates::red-hat  }
+    /^(Debian|Ubuntu)$/:{ include auto-updates::debian  }
+    default:            { include auto-updates::generic }
+  }
+}
+
+class auto-updates::red-hat {
+  package {
+    "yum-cron":
+      ensure => installed;
+  }
+  service {
+    "yum-cron":
+      ensure => running,
+      enable => true;
+  }
+}
+
+        
+class auto-updates::debian {  
   package {
     "unattended-upgrades":
       ensure => installed;
