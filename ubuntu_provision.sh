@@ -14,7 +14,7 @@ fi
 sudo apt-get upgrade -y
 if [ ! -f /usr/bin/curl ]
 then
-  sudo apt-get install curl
+  sudo apt-get install -y curl
 fi
 set -e
 
