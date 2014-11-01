@@ -21,7 +21,7 @@ class oraclejava-8-jdk {
   package {
     "oracle-java8-installer":
       ensure => installed,
-      require => [Exec['oracle_license_seen'],Exec['oracle_license_selected']];
+      require => [Exec['oracle_license_selected']]; # Exec['oracle_license_seen'],
   }
   exec { 'use-java-8':
     command => "/usr/sbin/tupdate-java-alternatives -s java-8-oracle",
