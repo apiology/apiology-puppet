@@ -16,6 +16,10 @@ if [ ! -f /usr/bin/curl ]
 then
   sudo apt-get install -y curl
 fi
+if [ ! -f /usr/bin/gpg ]
+then
+  sudo apt-get install -y gpg
+fi
 set -e
 
 if ! grep ubuntu /etc/passwd >/dev/null 2>&1
@@ -28,6 +32,7 @@ cd src
 if [ ! -f /etc/profile.d/rvm.sh ]
 then
   echo "Installing rvm..."
+  gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
   \curl -L https://get.rvm.io | sudo bash -s stable
   sudo usermod -a -G rvm ubuntu
 fi
