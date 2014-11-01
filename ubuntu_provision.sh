@@ -5,13 +5,8 @@ echo Running ubuntu_provision.sh as $0
 export PATH=/usr/local/bin/:$PATH
 set +e
 # would be needed for next step
-if [ ! -f /var/cache/apt/pkgcache.bin ] || \
-     /usr/bin/find /etc/apt/* -cnewer /var/cache/apt/pkgcache.bin | \
-     /bin/grep . > /dev/null
-then
-  sudo apt-get update -y
-fi
-sudo apt-get upgrade -y
+sudo apt-get update -y
+sudo apt-get dist-upgrade -y
 if [ ! -f /usr/bin/curl ]
 then
   sudo apt-get install -y curl
