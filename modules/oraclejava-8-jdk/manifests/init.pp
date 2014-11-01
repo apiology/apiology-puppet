@@ -13,11 +13,11 @@ class oraclejava-8-jdk {
     require => Package['debconf-utils'],
     unless => '/usr/bin/debconf-get-selections 2>/dev/null | grep shared/accepted-oracle-license-v1-1 | grep true';
   }
-  exec { 'oracle_license_seen':
-    command => '/bin/echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections',
-    require => Package['debconf-utils'],
-    unless => '/usr/bin/debconf-get-selections 2>/dev/null | grep shared/accepted-oracle-license-v1-1 | grep true';
-  }
+  # exec { 'oracle_license_seen':
+  #   command => '/bin/echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections',
+  #   require => [Package['debconf-utils'],Exec['oracle_license_selected']],
+  #   unless => '/usr/bin/debconf-get-selections 2>/dev/null | grep shared/accepted-oracle-license-v1-1 | grep true';
+  # }
   package {
     "oracle-java8-installer":
       ensure => installed,
