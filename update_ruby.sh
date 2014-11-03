@@ -90,4 +90,5 @@ $RVM use default
 $RVM uninstall ruby-2.1.2
 $RVM uninstall ruby-2.1.3
 rvm user gemsets
+rvm use $RUBY_VERSION@ubuntu --default
 rvm reload
