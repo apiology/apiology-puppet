@@ -65,20 +65,20 @@ class jenkins {
   }
   apache2::loadconf{"jenkins":}
 
-  define jenkins_job {
+  define jenkins_job($module) {
     file { "/tmp/${name}.job":
       mode => 644,
       owner => "jenkins",
       group => "nogroup",
       require => Service['jenkins'],
       notify => Exec["${name}"],
-      source => "puppet:///modules/jenkins-personal/${name}.job"
+      source => "puppet:///modules/${module}/${name}.job"
     }
     exec { "${name}":
-      command => "java -jar $jenkins::cli_jar -s http://localhost:8080/jenkins delete-job \"${name}\"; java -jar $jenkins::cli_jar -s http://localhost:8080/jenkins create-job \"${name}\" < \"/tmp/${name}.job\"",
+      command => "/usr/bin/java -jar $jenkins::cli_jar -s http://localhost:8080/jenkins delete-job \"${name}\"; /usr/bin/java -jar $jenkins::cli_jar -s http://localhost:8080/jenkins create-job \"${name}\" < \"/tmp/${name}.job\"",
       user => 'jenkins',
       require => [File["/tmp/${name}.job"],Service['jenkins']],
-      unless => "java -jar $jenkins::cli_jar -s http://localhost:8080/jenkins get-job \"${name}\"",
+      unless => "/usr/bin/java -jar $jenkins::cli_jar -s http://localhost:8080/jenkins get-job \"${name}\"",
       tries => 5,
       try_sleep => 30,
     }
