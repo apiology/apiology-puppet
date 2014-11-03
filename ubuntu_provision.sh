@@ -6,7 +6,7 @@ export PATH=/usr/local/bin/:$PATH
 set +e
 # would be needed for next step
 sudo apt-get update -y
-sudo apt-get dist-upgrade -y
+sudo apt-get dist-upgrade -y </dev/null
 if [ ! -f /usr/bin/curl ]
 then
   sudo apt-get install -y curl
