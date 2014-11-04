@@ -11,7 +11,18 @@ RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
         </Proxy>
         ProxyRequests Off
         ProxyPreserveHost on
-        ProxyPass /<%= @relative_path %> http://localhost:8080/<%= @relative_path %>
+        ProxyPass /<%= @relative_path %> http://localhost:8080/<%= @relative_path %> nocanon
+        ProxyPassReverse /<%= @relative_path %> http://localhost:8080/<%= @relative_path %>
+        ProxyPassReverse /<%= @relative_path %> http://<%= @site %>/<%= @relative_path %>
+        RequestHeader set X-Forwarded-Proto "https"
+        RequestHeader set X-Forwarded-Port "443"
+        ProxyRequests     Off
+        AllowEncodedSlashes NoDecode
+        <Proxy http://localhost:8080/<%= @relative_path %>*>
+          Order deny,allow
+          Allow from all
+        </Proxy>
+    
         Header edit Location ^http://localhost:10443/<%= @relative_path %> https://localhost:10443/<%= @relative_path %>
         Header edit Location ^http://<%= @site %>/<%= @relative_path %> https://<%= @site %>/<%= @relative_path %>
         <Location /<%= @relative_path %>>
