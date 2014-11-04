@@ -55,15 +55,15 @@ class jenkins {
     try_sleep => 7,
     unless => "/bin/ls $written_git_jpi"
   }
-  file { "/etc/apache2/conf-available/jenkins.conf":
+  file { "/etc/apache2/sites-available/jenkins.conf":
     owner => root,
     group => root,
     mode => 0644,
     source => "puppet:///modules/jenkins/jenkins.conf",
-    notify => Service[apache2],
+    notify => [Service['apache2'], apache2::loadsite['jenkins']],
     require => Package[apache2];
   }
-  apache2::loadconf{"jenkins":}
+  apache2::loadsite{"jenkins":}
 
   define jenkins_job($module) {
     file { "/tmp/${name}.job":
