@@ -1,4 +1,30 @@
-class jenkins {
+
+define jenkins_job($module, $relative_path = '') {
+  $cli_jar = $operatingsystemrelease ? {
+    14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
+    default => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
+    something_else => "/usr/share/jenkins/cli/java/cli.jar"
+  }
+
+  file { "/tmp/${name}.job":
+    mode => 644,
+    owner => "jenkins",
+    group => "nogroup",
+    require => Service['jenkins'],
+    notify => Exec["${name}"],
+    source => "puppet:///modules/${module}/${name}.job"
+  }
+  exec { "${name}":
+    command => "/usr/bin/java -jar $cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\"; /usr/bin/java -jar $cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" < \"/tmp/${name}.job\"",
+    user => 'jenkins',
+    require => [File["/tmp/${name}.job"],Service['jenkins']],
+    unless => "/usr/bin/java -jar $cli_jar -s http://localhost:8080/${relative_path} get-job \"${name}\"",
+    tries => 5,
+    try_sleep => 30,
+  }
+}
+
+define jenkins($site = $name, $relative_path = '') {
   include apache2
   include wget
   exec { 'install_jenkins_key':
@@ -35,13 +61,8 @@ class jenkins {
     owner => "root",
     group => "root",
     require => Package["jenkins"],
-    source => "puppet:///modules/jenkins/etc-default-jenkins",
+    content => template('jenkins/etc-default-jenkins.erb'),
     notify => Service["jenkins"],
-  }
-  $cli_jar = $operatingsystemrelease ? {
-    14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
-    default => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
-    something_else => "/usr/share/jenkins/cli/java/cli.jar"
   }
   $written_git_jpi = $operatingsystemrelease ? {
     12.04 => "/var/lib/jenkins/plugins/download/plugins/git/1.2.0/git.hpi",
@@ -59,28 +80,10 @@ class jenkins {
     owner => root,
     group => root,
     mode => 0644,
-    source => "puppet:///modules/jenkins/jenkins.conf",
+    content => template('jenkins/jenkins.conf.erb'),
     notify => [Service['apache2'], apache2::loadsite['jenkins']],
     require => Package[apache2];
   }
+  apache2::loadmodule { 'rewrite': }
   apache2::loadsite{"jenkins":}
-
-  define jenkins_job($module) {
-    file { "/tmp/${name}.job":
-      mode => 644,
-      owner => "jenkins",
-      group => "nogroup",
-      require => Service['jenkins'],
-      notify => Exec["${name}"],
-      source => "puppet:///modules/${module}/${name}.job"
-    }
-    exec { "${name}":
-      command => "/usr/bin/java -jar $jenkins::cli_jar -s http://localhost:8080/jenkins delete-job \"${name}\"; /usr/bin/java -jar $jenkins::cli_jar -s http://localhost:8080/jenkins create-job \"${name}\" < \"/tmp/${name}.job\"",
-      user => 'jenkins',
-      require => [File["/tmp/${name}.job"],Service['jenkins']],
-      unless => "/usr/bin/java -jar $jenkins::cli_jar -s http://localhost:8080/jenkins get-job \"${name}\"",
-      tries => 5,
-      try_sleep => 30,
-    }
-  }
 }

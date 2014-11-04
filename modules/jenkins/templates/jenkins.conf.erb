@@ -7,10 +7,10 @@
         </Proxy>
         ProxyRequests Off
         ProxyPreserveHost on
-        ProxyPass /jenkins http://localhost:8080/jenkins
-        Header edit Location ^http://localhost:10443/jenkins https://localhost:10443/jenkins
-        Header edit Location ^http://fribush.org/jenkins https://fribush.org/jenkins
-        <Location /jenkins>
+        ProxyPass /<%= @relative_path %> http://localhost:8080/<%= @relative_path %>
+        Header edit Location ^http://localhost:10443/<%= @relative_path %> https://localhost:10443/<%= @relative_path %>
+        Header edit Location ^http://fribush.org/<%= @relative_path %> https://fribush.org/<%= @relative_path %>
+        <Location /<%= @relative_path %>>
            AuthType Basic
            AuthName "Private Access"
            AuthUserFile /etc/apache2/authusers
