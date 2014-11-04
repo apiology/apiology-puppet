@@ -1,4 +1,3 @@
-
 define jenkins_job($module, $relative_path = '') {
   $cli_jar = $operatingsystemrelease ? {
     14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
@@ -24,7 +23,7 @@ define jenkins_job($module, $relative_path = '') {
   }
 }
 
-define jenkins($site = $name, $relative_path = '') {
+define jenkins($site = $name, $certfile = $name, $relative_path = '') { # 'ssl-cert-snakeoil' is another popular choice
   include apache2
   include wget
   exec { 'install_jenkins_key':
