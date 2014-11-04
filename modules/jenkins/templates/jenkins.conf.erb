@@ -1,3 +1,7 @@
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+
 <IfModule mod_ssl.c>
     <VirtualHost _default_:443>
         ServerAdmin webmaster@localhost
@@ -9,7 +13,7 @@
         ProxyPreserveHost on
         ProxyPass /<%= @relative_path %> http://localhost:8080/<%= @relative_path %>
         Header edit Location ^http://localhost:10443/<%= @relative_path %> https://localhost:10443/<%= @relative_path %>
-        Header edit Location ^http://fribush.org/<%= @relative_path %> https://fribush.org/<%= @relative_path %>
+        Header edit Location ^http://<%= @site %>/<%= @relative_path %> https://<%= @site %>/<%= @relative_path %>
         <Location /<%= @relative_path %>>
            AuthType Basic
            AuthName "Private Access"
