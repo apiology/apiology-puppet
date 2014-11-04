@@ -1,10 +1,10 @@
-define jenkins_job($module, $relative_path = '') {
-  $cli_jar = $operatingsystemrelease ? {
-    14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
-    default => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
-    something_else => "/usr/share/jenkins/cli/java/cli.jar"
-  }
+$jenkins_cli_jar = $operatingsystemrelease ? {
+  14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
+  default => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
+  something_else => "/usr/share/jenkins/cli/java/cli.jar"
+}
 
+define jenkins_job($module, $relative_path = '') {
   file { "/tmp/${name}.job":
     mode => 644,
     owner => "jenkins",
@@ -14,12 +14,34 @@ define jenkins_job($module, $relative_path = '') {
     source => "puppet:///modules/${module}/${name}.job"
   }
   exec { "${name}":
-    command => "/usr/bin/java -jar $cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\"; /usr/bin/java -jar $cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" < \"/tmp/${name}.job\"",
+    command => "/usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\"; /usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" < \"/tmp/${name}.job\"",
     user => 'jenkins',
     require => [File["/tmp/${name}.job"],Service['jenkins']],
-    unless => "/usr/bin/java -jar $cli_jar -s http://localhost:8080/${relative_path} get-job \"${name}\"",
+    unless => "/usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} get-job \"${name}\"",
     tries => 5,
     try_sleep => 30,
+  }
+}
+
+# git 1.2.0
+# git-client = 1.0.2
+define jenkins_plugin($version, $relative_path = '') {
+  $jenkins_cli_jar = $operatingsystemrelease ? {
+    14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
+    default => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
+    something_else => "/usr/share/jenkins/cli/java/cli.jar"
+  }
+  $written_git_jpi = $operatingsystemrelease ? {
+    default => "/var/lib/jenkins/plugins/download/plugins/${name}/${version}/${name}.hpi",
+    older => "/var/lib/jenkins/plugins/${name}.jpi"
+  }
+  exec {
+    "/usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} install-plugin http://updates.jenkins-ci.org/download/plugins/${name}/${version}/${name}.hpi -restart":
+    user => 'jenkins',
+    require => Service["jenkins"],
+    tries => 5,
+    try_sleep => 7,
+    unless => "/bin/ls $written_git_jpi"
   }
 }
 
@@ -63,18 +85,6 @@ define jenkins($site = $name, $certfile = $name, $relative_path = '') { # 'ssl-c
     content => template('jenkins/etc-default-jenkins.erb'),
     notify => Service["jenkins"],
   }
-  $written_git_jpi = $operatingsystemrelease ? {
-    12.04 => "/var/lib/jenkins/plugins/download/plugins/git/1.2.0/git.hpi",
-    default => "/var/lib/jenkins/plugins/git.jpi"
-  }
-  exec {
-    "/usr/bin/java -jar $cli_jar -s http://localhost:8080/jenkins install-plugin http://updates.jenkins-ci.org/download/plugins/git-client/1.0.2/git-client.hpi && /usr/bin/java -jar $cli_jar -s http://localhost:8080/jenkins install-plugin http://updates.jenkins-ci.org/download/plugins/git/1.2.0/git.hpi -restart":
-    user => 'jenkins',
-    require => Service["jenkins"],
-    tries => 5,
-    try_sleep => 7,
-    unless => "/bin/ls $written_git_jpi"
-  }
   file { "/etc/apache2/sites-available/jenkins.conf":
     owner => root,
     group => root,
@@ -82,6 +92,14 @@ define jenkins($site = $name, $certfile = $name, $relative_path = '') { # 'ssl-c
     content => template('jenkins/jenkins.conf.erb'),
     notify => [Service['apache2'], apache2::loadsite['jenkins']],
     require => Package[apache2];
+  }
+  jenkins_plugin { 'git':
+    version => '1.2.0',
+    relative_path => $relative_path
+  }
+  jenkins_plugin { 'git-client':
+    version => '1.0.2',
+    relative_path => $relative_path
   }
   apache2::loadmodule { 'rewrite': }
   apache2::loadsite{"jenkins":}
