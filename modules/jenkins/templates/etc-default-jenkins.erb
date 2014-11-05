@@ -55,4 +55,6 @@ AJP_PORT=-1
 # --argumentsRealm.passwd.$ADMIN_USER=[password] 
 # --argumentsRealm.$ADMIN_USER=admin
 # --webroot=~/.jenkins/war
-JENKINS_ARGS="--webroot=$JENKINS_RUN/war --httpPort=$HTTP_PORT --ajp13Port=$AJP_PORT --preferredClassLoader=java.net.URLClassLoader --prefix=/<%= @relative_path %> --httpListenAddress=127.0.0.1"
+HTTP_LISTEN_ADDRESS=127.0.0.1
+# HTTP_LISTEN_ADDRESS=0.0.0.0 # ONLY UNCOMMENT THIS TEMPORARILY IF YOU ARE LOCKED OUT - you can then access things on port 8080
+JENKINS_ARGS="--webroot=$JENKINS_RUN/war --httpPort=$HTTP_PORT --ajp13Port=$AJP_PORT --preferredClassLoader=java.net.URLClassLoader --prefix=/<%= @relative_path %> --httpListenAddress=$HTTP_LISTEN_ADDRESS"
