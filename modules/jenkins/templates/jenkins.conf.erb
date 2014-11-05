@@ -25,12 +25,15 @@ RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
     
         Header edit Location ^http://localhost:10443/<%= @relative_path %> https://localhost:10443/<%= @relative_path %>
         Header edit Location ^http://<%= @site %>/<%= @relative_path %> https://<%= @site %>/<%= @relative_path %>
+        <% if @use_basic_auth %>
         <Location /<%= @relative_path %>>
            AuthType Basic
            AuthName "Private Access"
            AuthUserFile /etc/apache2/authusers
            Require valid-user
         </Location>
+        <% end %>
+
         # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
         # error, crit, alert, emerg.
         # It is also possible to configure the loglevel for particular

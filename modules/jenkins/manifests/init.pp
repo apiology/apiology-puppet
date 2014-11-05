@@ -46,7 +46,7 @@ define jenkins_plugin($version, $relative_path = '') {
   }
 }
 
-define jenkins($site = $name, $certfile = $name, $relative_path = '') { # 'ssl-cert-snakeoil' is another popular choice
+define jenkins($site = $name, $certfile = $name, $relative_path = '', $use_basic_auth = true) { # 'ssl-cert-snakeoil' is another popular choice
   include apache2
   include wget
   exec { 'install_jenkins_key':
