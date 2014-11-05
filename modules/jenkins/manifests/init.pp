@@ -6,7 +6,7 @@ define jenkins_job($module, $relative_path = '', $use_basic_auth = true, $userna
   }
   $credentials_string = $use_basic_auth ? {
     true => '',
-    false => "--username $username --password $password"
+    false => "--username $username --password '$password'"
   }
   file { "/tmp/${name}.job":
     mode => 644,
