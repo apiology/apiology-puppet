@@ -1,9 +1,12 @@
-
-define jenkins_job($module, $relative_path = '') {
+define jenkins_job($module, $relative_path = '', $use_basic_auth = true, $username = '', $password = '') {
   $jenkins_cli_jar = $operatingsystemrelease ? {
     14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
     default => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
     something_else => "/usr/share/jenkins/cli/java/cli.jar"
+  }
+  $credentials_string = $use_basic_auth ? {
+    true => '',
+    false => "--username $username --password $password"
   }
   file { "/tmp/${name}.job":
     mode => 644,
@@ -13,7 +16,7 @@ define jenkins_job($module, $relative_path = '') {
     source => "puppet:///modules/${module}/${name}.job"
   }
   exec { "${name}":
-    command => "/usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\"; /usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" < \"/tmp/${name}.job\"",
+    command => "/usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\" ${credentials_string}; /usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" ${credentials_string} < \"/tmp/${name}.job\"",
     user => 'jenkins',
     require => [File["/tmp/${name}.job"],Package['jenkins']],
     notify => Service["jenkins"],
@@ -23,8 +26,6 @@ define jenkins_job($module, $relative_path = '') {
   }
 }
 
-# git 1.2.0
-# git-client = 1.0.2
 define jenkins_plugin($version, $relative_path = '') {
   $jenkins_cli_jar = $operatingsystemrelease ? {
     14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
