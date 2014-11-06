@@ -1,9 +1,13 @@
-define jenkins_job($module, $relative_path = '', $use_basic_auth = true, $username = '', $password = '') {
+class jenkins::conf {
   $jenkins_cli_jar = $operatingsystemrelease ? {
     14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
     default => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
     something_else => "/usr/share/jenkins/cli/java/cli.jar"
   }
+}
+
+define jenkins_job($module, $relative_path = '', $use_basic_auth = true, $username = '', $password = '') {
+  include jenkins::conf
   $credentials_string = $use_basic_auth ? {
     true => '',
     false => "--username $username --password '$password'"
@@ -16,33 +20,27 @@ define jenkins_job($module, $relative_path = '', $use_basic_auth = true, $userna
     source => "puppet:///modules/${module}/${name}.job"
   }
   exec { "${name}":
-    command => "/usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\" ${credentials_string}; /usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" ${credentials_string} < \"/tmp/${name}.job\"",
+    command => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\" ${credentials_string}; /usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" ${credentials_string} < \"/tmp/${name}.job\"",
     user => 'jenkins',
-    require => [File["/tmp/${name}.job"],Package['jenkins']],
-    notify => Service["jenkins"],
-    unless => "/usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} get-job \"${name}\"",
-    tries => 5,
-    try_sleep => 30,
+    require => [File["/tmp/${name}.job"],Service['jenkins']],
+    unless => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} get-job \"${name}\"",
+    tries => 2,
+    try_sleep => 20,
   }
 }
 
 define jenkins_plugin($version, $relative_path = '') {
-  $jenkins_cli_jar = $operatingsystemrelease ? {
-    14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
-    default => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
-    something_else => "/usr/share/jenkins/cli/java/cli.jar"
-  }
+  include jenkins::conf
   $written_git_jpi = $operatingsystemrelease ? {
     older => "/var/lib/jenkins/plugins/download/plugins/${name}/${version}/${name}.hpi",
     default => "/var/lib/jenkins/plugins/${name}.jpi"
   }
   exec {
-    "/usr/bin/java -jar $jenkins_cli_jar -s http://localhost:8080/${relative_path} install-plugin http://updates.jenkins-ci.org/download/plugins/${name}/${version}/${name}.hpi":
+    "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} install-plugin http://updates.jenkins-ci.org/download/plugins/${name}/${version}/${name}.hpi -restart":
     user => 'jenkins',
-    require => Package["jenkins"],
-    tries => 5,
+    require => Service["jenkins"],
+    tries => 2,
     try_sleep => 20,
-    notify => Service["jenkins"],
     unless => "/bin/ls $written_git_jpi"
   }
 }
