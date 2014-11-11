@@ -23,6 +23,7 @@ define jenkins_job($module, $relative_path = '', $use_basic_auth = true, $userna
     command => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\" ${credentials_string}; /usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" ${credentials_string} < \"/tmp/${name}.job\"",
     user => 'jenkins',
     require => [File["/tmp/${name}.job"],Service['jenkins']],
+    refreshonly => true,
     unless => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} get-job \"${name}\"",
     tries => 2,
     try_sleep => 20,
