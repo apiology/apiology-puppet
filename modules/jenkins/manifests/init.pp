@@ -54,8 +54,8 @@ define jenkins_plugin($version, $relative_path = '') {
     "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} install-plugin http://updates.jenkins-ci.org/download/plugins/${name}/${version}/${name}.hpi -restart":
     user => 'jenkins',
     require => [Service["jenkins"],File[$jenkins::conf::jenkins_cli_jar]],
-    tries => 2,
-    try_sleep => 20,
+    tries => 3,
+    try_sleep => 45,
     unless => "/bin/ls $written_git_jpi"
   }
 }
