@@ -1,9 +1,23 @@
 class jenkins::conf {
-  $jenkins_cli_jar = $operatingsystemrelease ? {
-    14.04 => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
-    default => "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar",
-    something_else => "/usr/share/jenkins/cli/java/cli.jar"
+  # rest is courtesy of https://github.com/jenkinsci/puppet-jenkins/blob/master/manifests/cli.pp
+  $jenkins_cli_jar = "/var/lib/jenkins/jenkins-cli.jar"
+  $extract_jar = "jar -xf /usr/share/jenkins/jenkins.war WEB-INF/jenkins-cli.jar"
+  $move_jar = "mv WEB-INF/jenkins-cli.jar ${jenkins_cli_jar}"
+  $remove_dir = 'rm -rf WEB-INF'
+
+  exec { 'jenkins-cli' :
+    command => "${extract_jar} && ${move_jar} && ${remove_dir}",
+    path    => ['/bin', '/usr/bin'],
+    cwd     => '/tmp',
+    creates => $jenkins_cli_jar,
+    require => Service['jenkins'],
   }
+
+  file { $jenkins_cli_jar:
+    ensure  => file,
+    require => Exec['jenkins-cli'],
+  }
+
 }
 
 define jenkins_job($module, $relative_path = '', $use_basic_auth = true, $username = '', $password = '') {
@@ -22,7 +36,7 @@ define jenkins_job($module, $relative_path = '', $use_basic_auth = true, $userna
   exec { "${name}":
     command => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\" ${credentials_string}; /usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" ${credentials_string} < \"/tmp/${name}.job\"",
     user => 'jenkins',
-    require => [File["/tmp/${name}.job"],Service['jenkins']],
+    require => [File["/tmp/${name}.job"],File[$jenkins::conf::jenkins_cli_jar]],
     refreshonly => true,
     unless => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} get-job \"${name}\"",
     tries => 2,
@@ -39,7 +53,7 @@ define jenkins_plugin($version, $relative_path = '') {
   exec {
     "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} install-plugin http://updates.jenkins-ci.org/download/plugins/${name}/${version}/${name}.hpi -restart":
     user => 'jenkins',
-    require => Service["jenkins"],
+    require => [Service["jenkins"],File[$jenkins::conf::jenkins_cli_jar]],
     tries => 2,
     try_sleep => 20,
     unless => "/bin/ls $written_git_jpi"
