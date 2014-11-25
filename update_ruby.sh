@@ -69,7 +69,7 @@ then
   interrogate_os
   RVM_FILE=ruby-${RUBY_VERSION}.tar.bz2
   BINARY=binaries/${OS_NAME}/${OS_VERSION}/${ARCH}/${RVM_FILE}
-  if ! $RVM mount -r http://rvm-binaries-apiology.s3.amazonaws.com/$BINARY
+  if ! $RVM mount --verify-downloads 2 -r http://rvm-binaries-apiology.s3.amazonaws.com/$BINARY
   then
     echo      
     echo
