@@ -19,6 +19,9 @@ set -e
 
 if ! grep ubuntu /etc/passwd >/dev/null 2>&1
 then
+    echo "No ubuntu user!"
+    # pull in full user provisioning from READMEs in unix-infrastructure-repo
+    exit 1
     /usr/sbin/useradd -m -r -c "Ubuntu" ubuntu
 fi
 mkdir -p src
