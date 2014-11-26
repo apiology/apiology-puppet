@@ -19,10 +19,10 @@ set -e
 
 if ! grep ubuntu /etc/passwd >/dev/null 2>&1
 then
-    echo "No ubuntu user!"
-    # pull in full user provisioning from READMEs in unix-infrastructure-repo
-    exit 1
-    /usr/sbin/useradd -m -r -c "Ubuntu" ubuntu
+    addgroup --gid 1001 ubuntu
+    adduser --disabled-password --uid 1001 --gid 1001 ubuntu
+    adduser ubuntu adm
+    echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 fi
 mkdir -p src
 cd src
