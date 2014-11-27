@@ -89,6 +89,7 @@ $RVM alias create default ruby-${RUBY_VERSION}
 $RVM use default
 $RVM uninstall ruby-2.1.2
 $RVM uninstall ruby-2.1.3
+$RVM uninstall ruby-2.1.4
 rvm user gemsets
 rvm use $RUBY_VERSION@ubuntu --default
 rvm reload
