@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RUBY_VERSION=2.1.4
+RUBY_VERSION=2.1.5
 
 echo Running update_ruby.sh as $0
 
