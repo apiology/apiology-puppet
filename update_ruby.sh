@@ -65,7 +65,7 @@ interrogate_arch() {
 }
 
 HAS_RUBY=`$RVM list | grep ruby-$RUBY_VERSION | wc -l`
-if [ $HAS_RUBY == 0 ]
+if [ "$HAS_RUBY" == 0 ]
 then
   # If this doesn't work, see 'Ruby' simplenote on how to upload binary.
   interrogate_arch
