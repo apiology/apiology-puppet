@@ -4,6 +4,8 @@ RUBY_VERSION=2.1.5
 
 echo Running update_ruby.sh as $0
 
+gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
+echo gpg key installed
 if [[ -s "$HOME/.rvm/scripts/rvm" ]]
 then
   . "$HOME/.rvm/scripts/rvm"
