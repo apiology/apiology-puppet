@@ -21,7 +21,7 @@ fi
 
 $RVM reload
 $RVM requirements run
-$RVM get staple
+$RVM get stable
 $RVM cleanup all
 
 interrogate_ubuntu() {
