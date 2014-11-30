@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RUBY_VERSION=2.1.4
+RUBY_VERSION=2.1.5
 
 echo Running update_ruby.sh as $0
 
@@ -69,7 +69,7 @@ then
   interrogate_os
   RVM_FILE=ruby-${RUBY_VERSION}.tar.bz2
   BINARY=binaries/${OS_NAME}/${OS_VERSION}/${ARCH}/${RVM_FILE}
-  if ! $RVM mount -r http://rvm-binaries-apiology.s3.amazonaws.com/$BINARY
+  if ! $RVM mount --verify-downloads 2 -r http://rvm-binaries-apiology.s3.amazonaws.com/$BINARY
   then
     echo      
     echo
@@ -89,6 +89,7 @@ $RVM alias create default ruby-${RUBY_VERSION}
 $RVM use default
 $RVM uninstall ruby-2.1.2
 $RVM uninstall ruby-2.1.3
+$RVM uninstall ruby-2.1.4
 rvm user gemsets
 rvm use $RUBY_VERSION@ubuntu --default
 rvm reload
