@@ -1,9 +1,11 @@
 #!/bin/bash
 
-RUBY_VERSION=2.1.4
+RUBY_VERSION=2.1.5
 
 echo Running update_ruby.sh as $0
 
+gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
+echo gpg key installed
 if [[ -s "$HOME/.rvm/scripts/rvm" ]]
 then
   . "$HOME/.rvm/scripts/rvm"
@@ -13,12 +15,13 @@ then
   . /etc/profile.d/rvm.sh
   RVM="rvmsudo rvm"
 else
+  echo "No rvm installed"
   exit 1
 fi
 
 $RVM reload
 $RVM requirements run
-$RVM get staple
+$RVM get stable
 $RVM cleanup all
 
 interrogate_ubuntu() {
@@ -62,14 +65,14 @@ interrogate_arch() {
 }
 
 HAS_RUBY=`$RVM list | grep ruby-$RUBY_VERSION | wc -l`
-if [ $HAS_RUBY == 0 ]
+if [ "$HAS_RUBY" == 0 ]
 then
   # If this doesn't work, see 'Ruby' simplenote on how to upload binary.
   interrogate_arch
   interrogate_os
   RVM_FILE=ruby-${RUBY_VERSION}.tar.bz2
   BINARY=binaries/${OS_NAME}/${OS_VERSION}/${ARCH}/${RVM_FILE}
-  if ! $RVM mount -r http://rvm-binaries-apiology.s3.amazonaws.com/$BINARY
+  if ! $RVM mount --verify-downloads 2 -r http://rvm-binaries-apiology.s3.amazonaws.com/$BINARY
   then
     echo      
     echo
@@ -89,6 +92,7 @@ $RVM alias create default ruby-${RUBY_VERSION}
 $RVM use default
 $RVM uninstall ruby-2.1.2
 $RVM uninstall ruby-2.1.3
+$RVM uninstall ruby-2.1.4
 rvm user gemsets
 rvm use $RUBY_VERSION@ubuntu --default
 rvm reload
