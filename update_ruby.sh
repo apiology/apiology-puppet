@@ -15,6 +15,7 @@ then
   . /etc/profile.d/rvm.sh
   RVM="rvmsudo rvm"
 else
+  echo "No rvm installed"
   exit 1
 fi
 
