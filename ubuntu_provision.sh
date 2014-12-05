@@ -19,9 +19,9 @@ set -e
 
 if ! grep ubuntu /etc/passwd >/dev/null 2>&1
 then
-    addgroup --gid 1001 ubuntu
-    adduser --disabled-password --uid 1001 --gid 1001 ubuntu
-    adduser ubuntu adm
+    sudo addgroup --gid 1001 ubuntu
+    sudo adduser --disabled-password --uid 1001 --gid 1001 ubuntu
+    sudo adduser ubuntu adm
     echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 fi
 mkdir -p src
