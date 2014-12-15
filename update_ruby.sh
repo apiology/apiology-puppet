@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RUBY_VERSION=2.1.5
+DESIRED_RUBY_VERSION=2.1.5
 
 echo Running update_ruby.sh as $0
 
@@ -64,13 +64,13 @@ interrogate_arch() {
   fi
 }
 
-HAS_RUBY=`$RVM list | grep ruby-$RUBY_VERSION | wc -l`
+HAS_RUBY=`$RVM list | grep ruby-$DESIRED_RUBY_VERSION | wc -l`
 if [ "$HAS_RUBY" == 0 ]
 then
   # If this doesn't work, see 'Ruby' simplenote on how to upload binary.
   interrogate_arch
   interrogate_os
-  RVM_FILE=ruby-${RUBY_VERSION}.tar.bz2
+  RVM_FILE=ruby-${DESIRED_RUBY_VERSION}.tar.bz2
   BINARY=binaries/${OS_NAME}/${OS_VERSION}/${ARCH}/${RVM_FILE}
   if ! $RVM mount --verify-downloads 2 -r http://rvm-binaries-apiology.s3.amazonaws.com/$BINARY
   then
@@ -83,16 +83,16 @@ then
     echo "Need binary ruby installed as $BINARY"
     exit 1
     # or just uncomment the next line and get rid of the 'exit 1'
-    # rvm install $RUBY_VERSION
+    # rvm install $DESIRED_RUBY_VERSION
   fi
 fi
 
 $RVM alias delete default
-$RVM alias create default ruby-${RUBY_VERSION}
+$RVM alias create default ruby-${DESIRED_RUBY_VERSION}
 $RVM use default
 $RVM uninstall ruby-2.1.2
 $RVM uninstall ruby-2.1.3
 $RVM uninstall ruby-2.1.4
 rvm user gemsets
-rvm use $RUBY_VERSION@ubuntu --default
+rvm use $DESIRED_RUBY_VERSION@ubuntu --default
 rvm reload
