@@ -17,7 +17,6 @@ class jenkins::conf {
     ensure  => file,
     require => Exec['Extract jenkins-cli jar'],
   }
-
 }
 
 define jenkins::jenkins_job($module, $relative_path = '', $use_auth = false, $username = '', $password = '') {
@@ -27,7 +26,7 @@ define jenkins::jenkins_job($module, $relative_path = '', $use_auth = false, $us
     true => "--username $username --password '$password'"
   }
 
-  file { "/tmp/${name}.job":
+  file { "/usr/local/${name}.job":
     mode => 644,
     owner => "jenkins",
     group => "nogroup",
@@ -36,9 +35,9 @@ define jenkins::jenkins_job($module, $relative_path = '', $use_auth = false, $us
   }
 
   exec { "${name}":
-    command => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\" ${credentials_string}; /usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" ${credentials_string} < \"/tmp/${name}.job\"",
+    command => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} delete-job \"${name}\" ${credentials_string}; /usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} create-job \"${name}\" ${credentials_string} < \"/usr/local/${name}.job\"",
     user => 'jenkins',
-    require => [File["/tmp/${name}.job"],File[$jenkins::conf::jenkins_cli_jar]],
+    require => [File["/usr/local/${name}.job"],File[$jenkins::conf::jenkins_cli_jar]],
     refreshonly => true,
     unless => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} get-job \"${name}\"",
     tries => 2,
