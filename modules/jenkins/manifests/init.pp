@@ -20,7 +20,7 @@ class jenkins::conf {
 
 }
 
-define jenkins_job($module, $relative_path = '', $use_auth = false, $username = '', $password = '') {
+define jenkins::jenkins_job($module, $relative_path = '', $use_auth = false, $username = '', $password = '') {
   include jenkins::conf
   $credentials_string = $use_auth ? {
     false => '',
