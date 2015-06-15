@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DESIRED_RUBY_VERSION=2.1.5
+DESIRED_RUBY_VERSION=2.2.2
 
 echo Running update_ruby.sh as $0
 
@@ -65,7 +65,7 @@ interrogate_arch() {
 }
 
 HAS_RUBY=`$RVM list | grep ruby-$DESIRED_RUBY_VERSION | wc -l`
-if [ "$HAS_RUBY" == 0 ]
+if [ $HAS_RUBY == 0 ] # if $HAS_RUBY is in quotes, it won't be found on OS X, where wc -l gives whitespace before and after output
 then
   # If this doesn't work, see 'Ruby' simplenote on how to upload binary.
   interrogate_arch
