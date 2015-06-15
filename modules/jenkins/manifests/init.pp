@@ -61,7 +61,7 @@ define jenkins_plugin($version, $relative_path = '', $use_auth = false, $usernam
     require => [Package["jenkins"],File[$jenkins::conf::jenkins_cli_jar]]
   }
   exec { "install jenkins plugin - $name":
-      command => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} install-plugin ${credentials_string} http://updates.jenkins-ci.org/download/plugins/${name}/${version}/${name}.hpi -restart",
+      command => "/usr/bin/java -Dhudson.model.User.allowNonExistentUserToLogin=true -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} install-plugin ${credentials_string} http://updates.jenkins-ci.org/download/plugins/${name}/${version}/${name}.hpi -restart",
       user => 'jenkins',
       require => [Exec["wait for jenkins - $name"],File[$jenkins::conf::jenkins_cli_jar]],
       tries => 8,
