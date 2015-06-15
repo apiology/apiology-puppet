@@ -60,8 +60,13 @@ define jenkins_plugin($version, $relative_path = '', $use_auth = false, $usernam
     returns => [0, 8],
     require => [Package["jenkins"],File[$jenkins::conf::jenkins_cli_jar]]
   }
+  #
+  # https://issues.jenkins-ci.org/browse/JENKINS-22346
+  #
+  # https://wiki.jenkins-ci.org/display/JENKINS/Features+controlled+by+system+properties
+  #
   exec { "install jenkins plugin - $name":
-      command => "/usr/bin/java -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} install-plugin ${credentials_string} http://updates.jenkins-ci.org/download/plugins/${name}/${version}/${name}.hpi -restart",
+      command => "/usr/bin/java -Dhudson.model.User.allowNonExistentUserToLogin=true -jar $jenkins::conf::jenkins_cli_jar -s http://localhost:8080/${relative_path} install-plugin ${credentials_string} http://updates.jenkins-ci.org/download/plugins/${name}/${version}/${name}.hpi -restart",
       user => 'jenkins',
       require => [Exec["wait for jenkins - $name"],File[$jenkins::conf::jenkins_cli_jar]],
       tries => 8,
