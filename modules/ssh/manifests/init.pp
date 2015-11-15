@@ -21,7 +21,7 @@ class ssh {
     "/etc/ssh/sshd_config":
       owner   => root,
       group   => root,
-      mode    => 644,
+      mode    => "644",
       source  => "puppet:///modules/ssh/sshd_config"
   }
   service {

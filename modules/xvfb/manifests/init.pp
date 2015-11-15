@@ -7,7 +7,7 @@ class xvfb {
     "/etc/init.d/xvfb":
       owner => root,
       group => root,
-      mode => 0755,
+      mode => "0755",
       source => 'puppet:///modules/xvfb/xvfb'
   }
   service {

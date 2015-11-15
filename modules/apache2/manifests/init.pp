@@ -53,7 +53,7 @@ class apache2 {
   file { "/etc/apache2/authusers":
     owner => root,
     group => www-data,
-    mode => 0640,
+    mode => "0640",
     ensure => file,
     require => Package[apache2]
   }
