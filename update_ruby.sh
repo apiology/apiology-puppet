@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DESIRED_RUBY_VERSION=2.2.2
+DESIRED_RUBY_VERSION=2.2.3
 
 echo Running update_ruby.sh as $0
 
@@ -81,9 +81,9 @@ then
     echo "Please put the following into an issue report at https://github.com/apiology/apiology-puppet/issues:"
     echo
     echo "Need binary ruby installed as $BINARY"
-    exit 1
+    # exit 1
     # or just uncomment the next line and get rid of the 'exit 1'
-    # rvm install $DESIRED_RUBY_VERSION
+     rvm install $DESIRED_RUBY_VERSION
   fi
 fi
 
