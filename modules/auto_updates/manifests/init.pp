@@ -1,13 +1,13 @@
-class auto-updates {
+class auto_updates {
   case $operatingsystem {
-    'Solaris':          { include auto-updates::solaris }
-    'RedHat', 'CentOS': { include auto-updates::red-hat  }
-    /^(Debian|Ubuntu)$/:{ include auto-updates::debian  }
-    default:            { include auto-updates::generic }
+    'Solaris':          { include auto_updates::solaris }
+    'RedHat', 'CentOS': { include auto_updates::red_hat  }
+    /^(Debian|Ubuntu)$/:{ include auto_updates::debian  }
+    default:            { include auto_updates::generic }
   }
 }
 
-class auto-updates::red-hat {
+class auto_updates::red_hat {
   package {
     "yum-cron":
       ensure => installed;
@@ -20,17 +20,17 @@ class auto-updates::red-hat {
 }
 
         
-class auto-updates::debian {  
+class auto_updates::debian {  
   package {
     "unattended-upgrades":
       ensure => installed;
   }
   file { "/etc/apt/apt.conf.d/20auto-upgrades":
-    mode => 644,
+    mode => "644",
     owner => "root",
     group => "root",
     require => Package["unattended-upgrades"],
-    source => "puppet:///modules/auto-updates/20auto-upgrades"
+    source => "puppet:///modules/auto_updates/20auto-upgrades"
   }
   file_line { 'Allow reboot after update':
     path  => '/etc/apt/apt.conf.d/50unattended-upgrades',

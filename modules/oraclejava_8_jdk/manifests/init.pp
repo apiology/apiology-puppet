@@ -1,5 +1,5 @@
-class oraclejava-8-jdk {
-  include software-properties-common
+class oraclejava_8_jdk {
+  include software_properties_common
   exec { 'setup_java_repo':
     command => "/usr/bin/add-apt-repository ppa:webupd8team/java -y && apt-get update -y",
     require => Package['software-properties-common'],
